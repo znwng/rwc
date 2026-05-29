@@ -36,4 +36,3 @@ pub fn get_file_bytes_stdin() -> io::Result<usize> {
 
     Ok(count)
 }
-

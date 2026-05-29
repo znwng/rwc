@@ -36,4 +36,3 @@ pub fn get_file_line_count_stdin() -> io::Result<usize> {
 
     Ok(count)
 }
-

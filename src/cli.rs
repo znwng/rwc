@@ -1,4 +1,4 @@
-use std::env;
+use std::{env, io, process};
 
 use crate::bytes::{get_file_bytes, get_file_bytes_stdin};
 
@@ -33,7 +33,7 @@ pub fn run() {
 
     let (flag, file_opt) = if args.len() == 2 {
         (args[1].as_str(), None)
-    } else if args.len() >= 3 {
+    } else if args.len() == 3 {
         (args[1].as_str(), Some(args[2].as_str()))
     } else {
         print_help();
@@ -41,41 +41,37 @@ pub fn run() {
     };
 
     match (flag, file_opt) {
-        ("-l", Some(file)) => {
-            println!("{}", get_file_line_count(file).unwrap())
-        }
+        ("-l", Some(file)) => print_count(get_file_line_count(file)),
 
-        ("-l", None) => {
-            println!("{}", get_file_line_count_stdin().unwrap())
-        }
+        ("-l", None) => print_count(get_file_line_count_stdin()),
 
-        ("-w", Some(file)) => {
-            println!("{}", get_file_word_count(file).unwrap())
-        }
+        ("-w", Some(file)) => print_count(get_file_word_count(file)),
 
-        ("-w", None) => {
-            println!("{}", get_file_word_count_stdin().unwrap())
-        }
+        ("-w", None) => print_count(get_file_word_count_stdin()),
 
-        ("-b", Some(file)) => {
-            println!("{}", get_file_bytes(file).unwrap())
-        }
+        ("-b", Some(file)) => print_count(get_file_bytes(file)),
 
-        ("-b", None) => {
-            println!("{}", get_file_bytes_stdin().unwrap())
-        }
+        ("-b", None) => print_count(get_file_bytes_stdin()),
 
-        ("-L", Some(file)) => {
-            println!("{}", get_max_line_length(file).unwrap())
-        }
+        ("-L", Some(file)) => print_count(get_max_line_length(file)),
 
-        ("-L", None) => {
-            println!("{}", get_max_line_length_stdin().unwrap())
-        }
+        ("-L", None) => print_count(get_max_line_length_stdin()),
 
         ("-h", _) => print_help(),
 
-        _ => eprintln!("Unknown flag"),
+        _ => {
+            eprintln!("Unknown flag");
+            process::exit(1);
+        }
     }
 }
 
+fn print_count(result: io::Result<usize>) {
+    match result {
+        Ok(count) => println!("{count}"),
+        Err(err) => {
+            eprintln!("rwc: {err}");
+            process::exit(1);
+        }
+    }
+}

@@ -7,4 +7,3 @@ mod words;
 fn main() {
     cli::run();
 }
-
